@@ -1,0 +1,19 @@
+.footer {
+	align-items: center;
+	background-color: white;
+	border-top: 1px solid #CCCCCC;
+	display: flex;
+	height: 60px;
+	justify-content: center;
+	width: 100%;
+}
+
+.footer3 {
+	bottom: 0;
+	position: absolute;
+}
+
+.footer4 {
+	flex-shrink: 0;
+}
+
