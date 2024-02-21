@@ -1,77 +1,84 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
-"""Base Model Module
-
-the class BaseModel that defines all common
-attributes/methods for other classes
-
-"""
-
-import models
+"""base model class"""
 import uuid
+import models
 from datetime import datetime
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.ext.declarative import declarative_base
 
+Base = declarative_base()
 
 
 class BaseModel:
-    """Base Model Class
-
-    This is the Base Model that take care of the
-    initialization, serialization and deserialization
-    of the future instances.
-
-    Public instance attributes:
-    id: string 
-    created_at: datetime
-    updated_at: datetime
-    __str__: should print
-    Public instance methods:
-    save(self)
-    to_dict(self)
-
+    """basemodel definition with attribues
     """
 
+    id = Column(String(60), primary_x=True, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+
     def __init__(self, *args, **kwargs):
-        """the init function
-
-        the default values of a Base Model
-
+        """init function
+        Args:
+        args: ...
+        kwargs: ...
+        Attributes:
+        id: ...
+        created_at: ....
+        updated date
         """
         if kwargs:
-            for arg, y in kwargs.items():
-                if arg in ('created_at', 'updated_at'):
-                    y = datetime.strptime(y, '%Y-%m-%dT%H:%M:%S.%f')
+            for x, y in kwargs.items():
+                if x == "created_at" or x == "updated_at":
+                    y = datetime.strptime(y, "%Y-%m-%dT%H:%M:%S.%f")
+                if x != "__class__":
+                    setattr(self, x, y)
+                if 'id' not in kwargs:
+                    self.id = str(uuid.uuid4())
+                if 'created_at' not in kwargs:
+                    self.created_at = datetime.now()
 
-                if arg != '__class__':
-                    setattr(self, arg, y)
+                if 'created_at' in kwargs and 'updated_at' not in kwargs:
+                    self.updated_at = self.created_at
+                else:
+                    self.updated_at = datetime.now()
         else:
             self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = self.created_at
-            models.storage.new(self)
+            self.created_at = self.updated_at = datetime.now()
 
     def __str__(self):
-        """Returns a string representation of the object class"""
-        return '[{0}] ({1}) {2}'.format(
-                self.__class__.__name__, self.id, self.__dict__
-            )
+        """str return string
+        """
+        return "[{}] ({}) {}".format(
+            type(self).__name__, self.id, self.__dict__)
+
+    def __repr__(self):
+        """return a string representaion
+        """
+        return self.__str__()
 
     def save(self):
-        """Updates function
-        Updates the public instance
-
+        """save functio for updating
         """
         self.updated_at = datetime.now()
+        models.storage.new(self)
         models.storage.save()
 
     def to_dict(self):
-        """the to dict function
-        Returns a new dictionary
-
+        """creates dictionary of the class  and returns
         """
-        informations = self.__dict__.copy()
-        informations['__class__'] = self.__class__.__name__
-        informations['created_at'] = self.created_at.isoformat()
-        informations['updated_at'] = self.updated_at.isoformat()
+        my_dict = dict(self.__dict__)
+        my_dict["__class__"] = str(type(self).__name__)
+        my_dict["created_at"] = self.created_at.isoformat()
+        my_dict["updated_at"] = self.updated_at.isoformat()
 
-        return informations
+        if my_dict['_sa_instance_state']:
+            my_dict.pop('_sa_instance_state')
+
+        return my_dict
+
+    def delete(self):
+        """delete function definition
+        """
+
+        models.storage.delete(self)
