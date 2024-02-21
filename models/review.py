@@ -1,19 +1,25 @@
 #!/usr/bin/python3
-"""
-Module for the reviews class
-"""
-from models.base_model import BaseModel
+""" review class"""
+from models.base_model import BaseModel, Base
+from os import getenv
+from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy.orm import relationship
 
 
-class Review(BaseModel):
+class Review(BaseModel, Base):
+    """This is the class review 
+        place_id: (sqlalchemy String): The review's place id.
+        user_id: (sqlalchemy String): The review's place id.)
+        text: (sqlalchemy String): The review description
     """
-   Public class attributes:
-    place_id: string - empty string: it will be the Place.id
-    user_id: string - empty string: it will be the User.id
-    text: string - empty string
-    """
 
-    place_id: str = ""
-    user_id: str = ""
-    text: str = ""
+    __tablename__ = "reviews"
 
+    if getenv('HBNB_TYPE_STORAGE') == 'db':
+        place_id = Column(String(60), ForeignKey("places.id"), nullable=False)
+        user_id = Column(String(60), ForeignKey("users.id"), nullable=False)
+        text = Column(String(1024), nullable=False)
+    else:
+        place_id = ''
+        user_id = ''
+        text = ''
