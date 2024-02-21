@@ -1,65 +1,78 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
-"""
-this modul is about storage of objects
-the file storage
-"""
-
+"""class storage"""
 import json
-from models.review import Review
-from models.state import State
-from models.user import User
-from models.amenity import Amenity
 from models.base_model import BaseModel
-from models.place import Place
-from os import path
+from models.user import User
+from models.state import State
 from models.city import City
-
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 
 
 class FileStorage:
-    """fileStorage
-    the filestorage class with
-    2 Attributes:
-        __file_path (str)
-        __objects (dict)
+    """filestorage class:
+        __file_path: ...
+        __objects: ...
     """
-
     __file_path = "file.json"
     __objects = {}
 
-    def all(self):
-        """all function
-        returns the dictionary __objects
+    def all(self, cls=None):
+        """all objects 
+
         """
+
+        if cls:
+            returntype = dict()
+
+            for x, y in self.__objects.items():
+                if y.__class__ == cls:
+                    returntype[x] = y
+
+            return returntype
+
         return self.__objects
 
     def new(self, obj):
-        """the new function
-        sets in __objects the obj with key <obj class name>.id
+        """new objects
         """
-        key = obj.__class__.__name__ + '.' + obj.id
-        self.__objects[key] = obj
-
-    def reload(self):
-        """the reload fucntion 
-        deserializes the JSON file to __objects 
-        (only if the JSON file (__file_path) exists 
-        ;otherwise, do nothing. If the file doesnt 
-        exist, no exception should be raised)
-        """
-        if path.exists(self.__file_path):
-            with open(self.__file_path, mode='r', encoding='utf-8') as dossier:
-                store = json.loads(dossier.read())
-                for y, z in store.items():
-                    self.__objects[y] = eval(z['__class__'])(**z)
+        if obj:
+            x = "{}.{}".format(type(obj).__name__, obj.id)
+            self.__objects[x] = obj
 
     def save(self):
+        """save file path to JSON file path
         """
-        serializes __objects to the JSON file (path: __file_path)
+        my_dict = {}
+        for x, val in self.__objects.items():
+            my_dict[x] = val.to_dict()
+        with open(self.__file_path, 'w', encoding="UTF-8") as f:
+            json.dump(my_dict, f)
+
+    def reload(self):
+        """reload function definition
         """
-        store = {}
-        for i, v in self.__objects.items():
-            store[i] = v.to_dict()
-        with open(self.__file_path, mode='w', encoding='utf-8') as dossier:
-            dossier.write(json.dumps(store))
+        try:
+            with open(self.__file_path, 'r', encoding="UTF-8") as f:
+                for x, val in (json.load(f)).items():
+                    val = eval(val["__class__"])(**val)
+                    self.__objects[x] = val
+        except FileNotFoundError:
+            pass
+
+    def delete(self, obj=None):
+        """Delete obj from __objects 
+        """
+        if obj:
+            key = "{}.{}".format(type(obj).__name__, obj.id)
+
+            if self.__objects[key]:
+                del self.__objects[key]
+                self.save()
+
+    def close(self):
+        """close function 
+        """
+        self.reload()
+
