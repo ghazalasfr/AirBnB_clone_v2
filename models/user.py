@@ -1,21 +1,36 @@
 #!/usr/bin/python3
-"""
- User class model 
-"""
-from models.base_model import BaseModel
+"""user class"""
+from models.base_model import BaseModel, Base
+from os import getenv
+from sqlalchemy import Column, String
+from sqlalchemy.orm import relationship
 
 
-class User(BaseModel):
+class User(BaseModel, Base):
+    """ user class
+
+    Attributes:
+        __tablename__: .....
+        email: (sqlalchemy String): ...
+        password (sqlalchemy String): ...
+        first_name (sqlalchemy String): ...
+        last_name (sqlalchemy String): ...
+        places (sqlalchemy relationship): ...
+        reviews (sqlalchemy relationship): ...
+
     """
-    User class with :
-    Public class attributes:
-        email: string - empty string
-        password: string - empty string
-        first_name: string - empty string
-        last_name: string - empty string
-    """
 
-    email = ""
-    password = ""
-    first_name = ""
-    last_name = ""
+    __tablename__ = "users"
+
+    if getenv('HBNB_TYPE_STORAGE') == 'db':
+        email = Column(String(128), nullable=False)
+        password = Column(String(128), nullable=False)
+        first_name = Column(String(128))
+        last_name = Column(String(128))
+        places = relationship("Place", backref="user", cascade="delete")
+        reviews = relationship("Review", backref="user", cascade="delete")
+    else:
+        email = ''
+        password = ''
+        first_name = ''
+        last_name = ''
