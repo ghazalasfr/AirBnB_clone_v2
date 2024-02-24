@@ -1,36 +1,33 @@
 #!/usr/bin/python3
-"""user class"""
+"""user modul"""
 from models.base_model import BaseModel, Base
-from os import getenv
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
+from os import getenv
 
 
 class User(BaseModel, Base):
-    """ user class
+    """ User class"""
+    __tablename__ = 'users'
 
-    Attributes:
-        __tablename__: .....
-        email: (sqlalchemy String): ...
-        password (sqlalchemy String): ...
-        first_name (sqlalchemy String): ...
-        last_name (sqlalchemy String): ...
-        places (sqlalchemy relationship): ...
-        reviews (sqlalchemy relationship): ...
+    if getenv("HBNB_TYPE_STORAGE") == "db":
 
-    """
-
-    __tablename__ = "users"
-
-    if getenv('HBNB_TYPE_STORAGE') == 'db':
         email = Column(String(128), nullable=False)
         password = Column(String(128), nullable=False)
-        first_name = Column(String(128))
-        last_name = Column(String(128))
-        places = relationship("Place", backref="user", cascade="delete")
-        reviews = relationship("Review", backref="user", cascade="delete")
+        first_name = Column(String(128), nullable=False)
+        last_name = Column(String(128), nullable=False)
+
+        places = relationship("Place", backref="user",
+                              cascade="all, delete-orphan")
+        reviews = relationship("Review", backref="user",
+                               cascade="all, delete-orphan")
     else:
         email = ''
         password = ''
         first_name = ''
         last_name = ''
+
+    def __init__(self, *args, **kwargs):
+        """initializes user"""
+        super().__init__(*args, **kwargs)
+
