@@ -47,15 +47,33 @@ class HBNBCommand(cmd.Cmd):
         """ the create function
         it will Creates a new instance of BaseModel.
         """
-        cmd_args = self.parseline(line)[0]
-        if cmd_args is None:
-            print('** class name missing **')
-        elif cmd_args not in self.myclasses:
+         try:
+            if not line:
+                raise SyntaxError()
+
+            splittedArgs = line.split(" ")
+            inst = eval("{}()".format(splittedArgs[0]))
+
+            for commandArg in splittedArgs[1:]:
+                param = commandArg.split("=")
+                key = param[0]
+                value = param[1].replace("_", " ")
+
+                if hasattr(inst, key):
+                    try:
+                        setattr(inst, key, eval(value))
+                    except Exception:
+                        pass
+
+            inst.save()
+
+            print("{}".format(inst.id))
+        except SyntaxError:
+            print("** class name missing **")
+        except NameError:
             print("** class doesn't exist **")
-        else:
-            N_objects = eval(cmd_args)()
-            N_objects.save()
-            print(N_objects.id)
+        except IndexError:
+            pass
 
     def do_show(self, line):
         """ show function
