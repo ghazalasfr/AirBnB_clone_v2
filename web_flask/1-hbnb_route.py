@@ -1,21 +1,28 @@
 #!/usr/bin/python3
-"""flask task 2
-"""
 from flask import Flask
+"""class Flask"""
 
-if __name__ == '__main__':
-    app = Flask(__name__)
 
-    @app.route('/', strict_slashes=False)
-    def index():
-        """Display 'Hello HBNB!'
-        """
-        return 'Hello HBNB!'
+app = Flask(__name__)
 
-    @app.route('/hbnb', strict_slashes=False)
-    def hbnb():
-        """Display 'HBNB'
-        """
-        return 'HBNB'
 
-    app.run('0.0.0.0)
+@app.route('/', strict_slashes=False)
+def hello_hbnb():
+    """displays text
+    Returns:
+        text
+    """
+    return "Hello HBNB!"
+
+
+@app.route('/hbnb', strict_slashes=False)
+def display_hbnb():
+    """displays text
+    Returns:
+        text
+    """
+    return "HBNB"
+
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
