@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""db model class"""
+"""This is the DB storage class"""
 from models.base_model import BaseModel, Base
 from models.user import User
 from models.state import State
@@ -15,18 +15,19 @@ all_classes = {"State", "City", "Amenity", "User", "Place", "Review"}
 
 
 class DBStorage:
-    """dbstorage class
+    """DBStorage classe deficnition
 
     Attributes:
-        __engine: ....
-        __session: ....
+        __engine: The SQLAlchemy engine
+        __session: The SQLAlchemy session
+
     """
 
     __engine = None
     __session = None
 
     def __init__(self):
-        """init function
+        """Initialize def
         """
 
         db_uri = "{0}+{1}://{2}:{3}@{4}:3306/{5}".format(
@@ -41,7 +42,7 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """all fucntion that list all
+        """...
         """
         entities = dict()
 
@@ -54,26 +55,26 @@ class DBStorage:
         return entities
 
     def new(self, obj):
-        """new for new session
+        """new add
         """
         if obj:
             self.__session.add(obj)
 
     def save(self):
-        """save all function
+        """save
         """
 
         self.__session.commit()
 
     def delete(self, obj=None):
-        """delete function
+        """Delete obj
         """
 
         if obj is not None:
             self.__session.delete(obj)
 
     def reload(self):
-        """reload function
+        """reload def.
         """
 
         Base.metadata.create_all(self.__engine)
@@ -83,7 +84,7 @@ class DBStorage:
         self.__session = Session()
 
     def get_data_from_table(self, cls, structure):
-        """get data from table
+        """get data def
         """
 
         if type(structure) is dict:
@@ -96,6 +97,6 @@ class DBStorage:
             return structure
 
     def close(self):
-        """close function
+        """Close function
         """
         self.__session.close()

@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""This is the file storage model"""
+"""This is the file storage class """
 import json
 from models.base_model import BaseModel
 from models.user import User
@@ -11,16 +11,17 @@ from models.review import Review
 
 
 class FileStorage:
-    """file storage class
+    """filestorage classe with:
     Attributes:
-        __file_path: ...
-        __objects: ...
+        __file_path: path to the JSON file
+        __objects: objects will be stored
     """
     __file_path = "file.json"
     __objects = {}
 
     def all(self, cls=None):
-        """Returns all
+        """Returns all objets
+
         """
 
         if cls:
@@ -37,14 +38,14 @@ class FileStorage:
     def new(self, obj):
         """new def
         Args:
-            obj: ...
+            obj: given object
         """
         if obj:
             key = "{}.{}".format(type(obj).__name__, obj.id)
             self.__objects[key] = obj
 
     def save(self):
-        """save def
+        """save function
         """
         my_dict = {}
         for key, value in self.__objects.items():
@@ -53,7 +54,7 @@ class FileStorage:
             json.dump(my_dict, f)
 
     def reload(self):
-        """reload def
+        """reload function
         """
         try:
             with open(self.__file_path, 'r', encoding="UTF-8") as f:
@@ -64,7 +65,7 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
-        """Delete obj
+        """Delete obj function
         """
         if obj:
             key = "{}.{}".format(type(obj).__name__, obj.id)
@@ -77,4 +78,3 @@ class FileStorage:
         """close def
         """
         self.reload()
-
